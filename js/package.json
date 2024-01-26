@@ -1,0 +1,24 @@
+{
+  "name": "qrkey",
+  "version": "0.0.1",
+  "description": "Swarm robotics deployment made easy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DotBots/qrkey.git"
+  },
+  "keywords": [
+    "swarm",
+    "robotics",
+    "ux"
+  ],
+  "author": "Alexandre Abadie <alexandre.abadie@inria.fr>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/DotBots/qrkey/issues"
+  },
+  "homepage": "https://github.com/DotBots/qrkey#readme"
+}
