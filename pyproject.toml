@@ -29,7 +29,7 @@ Issues = "https://github.com/DotBots/qrkey/issues"
 Source = "https://github.com/DotBots/qrkey"
 
 [tool.hatch.version]
-path = "src/qrkey/__about__.py"
+path = "python/qrkey/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -56,19 +56,19 @@ dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/qrkey tests}"
+check = "mypy --install-types --non-interactive {args:python/qrkey python/tests}"
 
 [tool.coverage.run]
 source_pkgs = ["qrkey", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/qrkey/__about__.py",
+  "python/qrkey/__about__.py",
 ]
 
 [tool.coverage.paths]
-qrkey = ["src/qrkey", "*/qrkey/src/qrkey"]
-tests = ["tests", "*/qrkey/tests"]
+qrkey = ["python/qrkey", "*/qrkey/python/qrkey"]
+tests = ["python/tests", "*/qrkey/python/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
