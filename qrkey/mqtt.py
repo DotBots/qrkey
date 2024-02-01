@@ -115,7 +115,12 @@ class QrKeyController:
             self.request_callback(payload)
         else:
             for registered_topic in self.message_callback_map.keys():
-                if re.match(registered_topic, sub_topic):
+                topic_regex = (
+                    r'^'
+                    + r'\/'.join(registered_topic.split('/')).replace('+', '.+')
+                    + r'$'
+                )
+                if re.match(topic_regex, sub_topic):
                     self.message_callback_map[registered_topic](sub_topic, payload)
                     break
 
@@ -262,8 +267,7 @@ class QrKeyController:
             return
         full_topic = f'{self.base_topic}{topic}'
         self.client.subscribe(full_topic)
-        topic_regex = r'^' + r'\/'.join(topic.split('/')).replace('+', '.+') + r'$'
-        self.message_callback_map.update({topic_regex: callback})
+        self.message_callback_map.update({topic: callback})
 
     def publish(self, topic, message):
         payload = PayloadModel(timestamp=time.time(), payload=message)
