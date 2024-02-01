@@ -27,13 +27,13 @@ jobs:
             python-version: "3.11"
             node-version: "18"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up nodejs ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
@@ -52,7 +52,7 @@ jobs:
       if: >-
         matrix.python-version == 3.12 &&
         matrix.node-version == 20
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         verbose: true
 
@@ -60,9 +60,9 @@ jobs:
     name: check frontend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up nodejs
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: "20"
     - run: npm install
@@ -74,7 +74,7 @@ jobs:
     - run: npm run build
       working-directory: ./qrkey/ui
     - name: Upload frontend build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ui
         path: ./qrkey/ui/build
@@ -90,7 +90,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -98,7 +98,7 @@ jobs:
     - name: Install hatch
       run: python -m pip install --upgrade hatch
     - name: Set up nodejs
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: "20"
     - name: Build package
