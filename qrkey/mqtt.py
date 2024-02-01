@@ -159,7 +159,7 @@ class QrKeyController:
         """Disable old MQTT crypto after 5 minutes."""
         if self.client.is_connected is not True:
             return
-        await asyncio.sleep(qrkey_settings.pin_code_disable_delay)
+        await asyncio.sleep(qrkey_settings.pin_code_revoke_delay)
         self.logger.info('Last pin code update notification', topic=self.old_base_topic)
         # Send the pin code update notification on the old topic with the old key
         notification = NotificationModel(
