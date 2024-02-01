@@ -35,11 +35,6 @@ from qrkey.models import (
 )
 from qrkey.settings import qrkey_settings
 
-PIN_CODE_REFRESH_PERIOD_S = 15 * 60  # 15 minutes
-PIN_CODE_DISABLE_DELAY_S = 2 * 60  # 2 minutes
-PIN_CODE_REFRESH_PERIOD_S = 15  # 15 seconds
-PIN_CODE_DISABLE_DELAY_S = 2  # 2 seconds
-
 
 class QrKeyController:
     def __init__(
@@ -164,7 +159,7 @@ class QrKeyController:
         """Disable old MQTT crypto after 5 minutes."""
         if self.client.is_connected is not True:
             return
-        await asyncio.sleep(PIN_CODE_DISABLE_DELAY_S)
+        await asyncio.sleep(qrkey_settings.pin_code_disable_delay)
         self.logger.info('Last pin code update notification', topic=self.old_base_topic)
         # Send the pin code update notification on the old topic with the old key
         notification = NotificationModel(
@@ -203,7 +198,7 @@ class QrKeyController:
 
     async def _rotate_pin_code(self):
         while 1:
-            await asyncio.sleep(PIN_CODE_REFRESH_PERIOD_S)
+            await asyncio.sleep(qrkey_settings.pin_code_refresh_interval)
             self.pin_code = generate_pin_code()
             self._update_crypto()
             self._setup_default_subscriptions()

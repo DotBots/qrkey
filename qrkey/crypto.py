@@ -14,12 +14,13 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from joserfc import jwe
 
 from qrkey.__about__ import __version__
+from qrkey.settings import qrkey_settings
 
-PIN_CODE_SIZE = 12
+
 JOSE_PROTECTED = {'alg': 'dir', 'enc': 'A256GCM'}
 
 
-def generate_pin_code(length: int = PIN_CODE_SIZE) -> str:
+def generate_pin_code(length: int = qrkey_settings.pin_code_length) -> str:
     return ''.join(secrets.choice(string.digits) for i in range(length))
 
 
