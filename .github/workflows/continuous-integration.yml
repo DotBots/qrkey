@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+
+jobs:
+
+  test:
+    name: test (${{ matrix.os }}, python-${{ matrix.python-version }}, node-${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        python-version: ["3.12"]
+        node-version: ["20"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.11"
+            node-version: "18"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Set up nodejs ${{ matrix.node-version }}
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install hatch
+      run: python -m pip install --upgrade hatch
+    - name: Check style
+      run: hatch fmt --check
+    - name: Check types
+      run: hatch run types:check
+    - name: Run tests
+      run: hatch run test
+    - name: Upload coverage to Codecov
+      if: >-
+        matrix.python-version == 3.12 &&
+        matrix.node-version == 20
+      uses: codecov/codecov-action@v3
+      with:
+        verbose: true
+
+  ui:
+    name: check frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up nodejs
+      uses: actions/setup-node@v3
+      with:
+        node-version: "20"
+    - run: npm install
+      working-directory: ./qrkey/ui
+    - run: npm run test
+      working-directory: ./qrkey/ui
+    - run: npm run lint
+      working-directory: ./qrkey/ui
+    - run: npm run build
+      working-directory: ./qrkey/ui
+    - name: Upload frontend build
+      uses: actions/upload-artifact@v3
+      with:
+        name: ui
+        path: ./qrkey/ui/build
+
+  package:
+    needs: [test, ui]
+    name: build source package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+    - name: Install hatch
+      run: python -m pip install --upgrade hatch
+    - name: Set up nodejs
+      uses: actions/setup-node@v3
+      with:
+        node-version: "20"
+    - name: Build package
+      run: hatch build
+    - name: Upload source package as artifact
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
+        path: |
+          ./dist/*.tar.gz
+          ./dist/*.whl

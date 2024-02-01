@@ -2,13 +2,25 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build]
+include = [
+    "qrkey/ui/*",
+    "*.py"
+]
+
+[tool.hatch.build.targets.sdist.hooks.custom]
+path = "utils/hooks/sdist.py"
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "utils/hooks/wheel.py"
+
 [project]
 name = "qrkey"
 dynamic = ["version"]
 description = "Swarm robotics deployments made easy."
 readme = "README.md"
-requires-python = ">=3.8"
-license = "BSD-3-clause"
+requires-python = ">=3.11"
+license = "BSD-3-Clause"
 keywords = ["swarm", "robotics", "ux"]
 authors = [
   { name = "Alexandre Abadie", email = "alexandre.abadie@inria.fr" },
@@ -20,7 +32,18 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-dependencies = []
+dependencies = [
+    "cryptography   == 41.0.7",
+    "fastapi        == 0.109.0",
+    "fastapi-mqtt   == 2.1.0",
+    "httpx          == 0.26.0",
+    "joserfc        == 0.9.0",
+    "pydantic-settings == 2.1.0",
+    "segno          == 1.6.0",
+    "structlog      == 24.1.0",
+    "uvicorn        == 0.25.0",
+    "websockets     == 12.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/DotBots/qrkey#readme"
@@ -28,24 +51,17 @@ Issues = "https://github.com/DotBots/qrkey/issues"
 Source = "https://github.com/DotBots/qrkey"
 
 [tool.hatch.version]
-path = "python/qrkey/__about__.py"
+path = "qrkey/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
-  "coverage[toml]>=6.5",
+  "codecov",
   "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
 ]
 [tool.hatch.envs.default.scripts]
-test = "pytest {args:python/tests}"
-test-cov = "coverage run -m pytest {args:python/tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
+test = "pytest -vv -s --color=yes --doctest-modules --cov=qrkey --cov-report=term --cov-report=term-missing --cov-report=xml {args:qrkey}"
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.11", "3.12"]
@@ -55,23 +71,20 @@ dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:python/qrkey python/tests}"
+check = "mypy --install-types --non-interactive {args:qrkey}"
 
-[tool.coverage.run]
-source_pkgs = ["qrkey", "python/tests"]
-branch = true
-parallel = true
-omit = [
-  "python/qrkey/__about__.py",
-]
+[tool.isort]
+multi_line_output = 3  # Use Vertical Hanging Indent
+profile = "black"
 
-[tool.coverage.paths]
-qrkey = ["python/qrkey", "*/qrkey/python/qrkey"]
-tests = ["python/tests", "*/qrkey/python/tests"]
+[tool.mypy]
+disable_error_code = "attr-defined"
 
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+[tool.ruff]
+select = ["E", "F"]
+line-length = 88
+ignore = ["E501"]
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
