@@ -11,16 +11,16 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 sys.path.append(os.path.dirname(__file__))
 
 
-NPM_INSTALL_CMD = "npm install --no-progress"
-NPM_BUILD_CMD = "npm run build"
+NPM_INSTALL_CMD = 'npm install --no-progress'
+NPM_BUILD_CMD = 'npm run build'
 
 
 def build_ui(root):
     """Builds the ReactJS UI."""
-    ui_dir = os.path.join(root, "qrkey", "ui")
-    os.makedirs(os.path.join(ui_dir, "build"), exist_ok=True)
-    if sys.platform != "win32":
-        print("Building React frontend application...")
+    ui_dir = os.path.join(root, 'qrkey', 'ui')
+    os.makedirs(os.path.join(ui_dir, 'build'), exist_ok=True)
+    if sys.platform != 'win32':
+        print('Building React frontend application...')
         subprocess.run(shlex.split(NPM_INSTALL_CMD), cwd=ui_dir, check=True)
         subprocess.run(shlex.split(NPM_BUILD_CMD), cwd=ui_dir, check=True)
 
