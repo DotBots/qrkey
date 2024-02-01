@@ -47,10 +47,10 @@ test('Renders Pin Code', async () => {
 
   // Testing websocket
   expect(logSpy).toHaveBeenCalledWith('websocket opened');
-  wsServer.send(JSON.stringify({cmd: 2})); // cmd != 3 should be ignored
+  wsServer.send(JSON.stringify({cmd: 2})); // cmd != 255 should be ignored
   screen.getByText(`${TestPinCode}`);
 
-  wsServer.send(JSON.stringify({cmd: 3, pin_code: 87654321}));
+  wsServer.send(JSON.stringify({cmd: 255, pin_code: 87654321}));
   await screen.findByText("87654321", {waitForElementOptions: waitForElementOptions});
   wsServer.close();
   expect(logSpy).toHaveBeenCalledWith('websocket closed');

@@ -6,13 +6,7 @@ import useWebSocket from 'react-use-websocket';
 import './PinCode.css';
 
 const websocketUrl = `${process.env.REACT_APP_WS_URL}/ws`;
-
-export const NotificationType = {
-  None: 0,
-  Reload: 1,
-  Update: 2,
-  PinCodeUpdate: 3,
-};
+const PinCodeUpdateValue = 255;
 
 const apiFetchPinCode = async () => {
   return await axios.get(
@@ -61,9 +55,9 @@ export const PinCode = () => {
   };
 
   const onWsMessage = (event) => {
-    console.log('websocket message');
     const message = JSON.parse(event.data);
-    if (message.cmd === NotificationType.PinCodeUpdate) {
+    console.log(`websocket message ${message.pin_code}`);
+    if (message.cmd === PinCodeUpdateValue) {
       setPinCode(message.pin_code);
       fetchQrCode();
     }
