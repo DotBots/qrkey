@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/DotBots/qrkey/issues"
   },
-  "homepage": "https://github.com/DotBots/qrkey/js/#readme",
+  "homepage": "https://github.com/DotBots/qrkey/tree/main/js#readme",
   "dependencies": {
     "futoin-hkdf": "^1.5.3",
     "jose": "^5.2.0",
