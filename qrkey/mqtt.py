@@ -83,7 +83,7 @@ class QrKeyController:
 
     def on_message(self, _, topic, payload, qos, properties):
         logger = self.logger.bind(topic=topic, qos=qos, **properties)
-        sub_topic = topic.replace(self.base_topic(), '')
+        sub_topic = topic.replace(self.base_topic, '')
         decrypt_key = self.mqtt_aes_key
         if topic.startswith(self.old_base_topic) and self.old_mqtt_aes_key is not None:
             sub_topic = topic.replace(self.old_base_topic, '')
@@ -102,8 +102,8 @@ class QrKeyController:
         except ValidationError as exc:
             logger.warning(f'Invalid payload received: {exc.errors()}')
             return
-        if payload.timestamp < time.time() - 2 or payload.timestamp > time.time() + 2:
-            logger.warning('Invalid payload timestamp')
+        if payload.timestamp < time.time() - 1 or payload.timestamp > time.time() + 1:
+            logger.warning(f'Invalid payload timestamp {payload.timestamp}, {time.time()}')
             return
         payload = payload.payload
         if sub_topic == '/request':
