@@ -56,6 +56,24 @@ jobs:
       with:
         verbose: true
 
+  js:
+    name: check js module
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up nodejs
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+    - run: npm install
+      working-directory: ./js
+    - run: npm run build
+      working-directory: ./js
+    - name: Upload js library
+      uses: actions/upload-artifact@v4
+      with:
+        name: js
+        path: ./js/dist/*.js
+
   ui:
     name: check frontend
     runs-on: ubuntu-latest
@@ -73,7 +91,7 @@ jobs:
       working-directory: ./qrkey/ui
     - run: npm run build
       working-directory: ./qrkey/ui
-    - name: Upload frontend build
+    - name: Upload ui build
       uses: actions/upload-artifact@v4
       with:
         name: ui
@@ -103,7 +121,7 @@ jobs:
         node-version: "20"
     - name: Build package
       run: hatch build
-    - name: Upload source package as artifact
+    - name: Upload source and wheel packages
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
       with:
