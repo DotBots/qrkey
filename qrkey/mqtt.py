@@ -9,7 +9,7 @@ import json
 import re
 import time
 import uuid
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import structlog
 import uvicorn
@@ -56,8 +56,8 @@ class QrKeyController:
         self.message_callback_map: Dict[str, Callable] = {}
         self.request_callback: Callable = request_callback
         self.pin_code: str = generate_pin_code()
-        self.mqtt_aes_key: Optional[bytes] = derive_aes_key(self.pin_code)
-        self.mqtt_topic: Optional[str] = derive_topic(self.pin_code)
+        self.mqtt_aes_key: bytes = derive_aes_key(self.pin_code)
+        self.mqtt_topic: str = derive_topic(self.pin_code)
         self.old_mqtt_aes_key = self.mqtt_aes_key
         self.old_mqtt_topic = self.mqtt_topic
 
@@ -186,7 +186,7 @@ class QrKeyController:
         except websockets.exceptions.ConnectionClosedError:
             await asyncio.sleep(0.1)
 
-    async def _notify_pin_code_update(self, notification):
+    async def _notify_pin_code_update(self, notification: NotificationModel):
         """Send a pin code update to all web clients connected."""
         self.logger.debug('notify', cmd=notification.cmd.name)
         await asyncio.gather(*[
@@ -256,7 +256,7 @@ class QrKeyController:
             for task in tasks:
                 task.cancel()
 
-    def subscribe(self, topic, callback):
+    def subscribe(self, topic: str, callback: Callable):
         if topic == '/request':
             self.logger.warning('Cannot subscribe to /request topic')
             return
@@ -264,7 +264,7 @@ class QrKeyController:
         self.client.subscribe(full_topic)
         self.message_callback_map.update({topic: callback})
 
-    def publish(self, topic, message):
+    def publish(self, topic: str, message: Any):
         payload = PayloadModel(timestamp=time.time(), payload=message)
         self.client.publish(
             f'{self.base_topic}{topic}',
