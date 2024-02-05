@@ -10,6 +10,15 @@
   color: #282c34;
 }
 
+.Button {
+  background-color: #ffffff;
+  border: none;
+  color: #888888;
+  display: inline-block;
+  font-size: 32px;
+  cursor:pointer;
+}
+
 .Pop { animation: pop 0.5s; }
 @keyframes pop {
   10% {transform: scale(0.8);}

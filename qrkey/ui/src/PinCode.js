@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import axios from 'axios';
 import useWebSocket from 'react-use-websocket';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './PinCode.css';
 
 const websocketUrl = `${process.env.REACT_APP_WS_URL}/ws`;
@@ -29,6 +30,7 @@ const Animate = ({ children, on, transition }) => {
 export const PinCode = () => {
   const [ pinCode, setPinCode ] = useState();
   const [ qrCode, setQrCode ] = useState();
+  const [ pinCodeCopied, setPinCodeCopied ] = useState(false);
 
   const fetchPinCode = useCallback(async () => {
     const data = await apiFetchPinCode().catch(error => console.log(error));
@@ -63,6 +65,12 @@ export const PinCode = () => {
     }
   };
 
+  const onClipboardClick = async () => {
+    await navigator.clipboard.writeText(pinCode);
+    setPinCodeCopied(true);
+    console.log(`Pin Code ${pinCode} copied to clipboard`);
+  };
+
   useWebSocket(websocketUrl, {
     onOpen: () => onWsOpen(),
     onClose: () => console.log("websocket closed"),
@@ -79,7 +87,7 @@ export const PinCode = () => {
       }
       {pinCode &&
       <p>
-        Pin Code: <Animate on={pinCode} transition="FadeIn">{pinCode}</Animate>
+        Pin Code: <Animate on={pinCode} transition="FadeIn">{pinCode}</Animate>&nbsp;<button className="Button" type="button" onClick={onClipboardClick}><i className={`bi ${pinCodeCopied ? "bi-clipboard-check": "bi-clipboard"}`}></i></button>
       </p>
       }
     </div>
