@@ -12,12 +12,19 @@ from typing import Optional
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from joserfc import jwe
+from semver import VersionInfo
 
 from qrkey.__about__ import __version__
 from qrkey.settings import qrkey_settings
 
 
 JOSE_PROTECTED = {'alg': 'dir', 'enc': 'A256GCM'}
+
+
+def _parsed_version(version) -> str:
+    parsed = VersionInfo.parse(version)
+    # remove the patch version from the version
+    return f'{parsed.major}.{parsed.minor}'
 
 
 def generate_pin_code(length: int = qrkey_settings.pin_code_length) -> str:
@@ -30,7 +37,7 @@ def derive_topic(pin_code: str) -> str:
         algorithm=hashes.SHA256(),
         length=16,
         salt=b'',
-        info=f'secret_topic_{__version__}'.encode(),
+        info=f'secret_topic_{_parsed_version(__version__)}'.encode(),
     )
     topic = kdf_topic.derive(pin_code.encode())
     return base64.urlsafe_b64encode(topic).decode()
@@ -42,7 +49,7 @@ def derive_aes_key(pin_code: str) -> bytes:
         algorithm=hashes.SHA256(),
         length=32,
         salt=b'',
-        info=f'secret_key_{__version__}'.encode(),
+        info=f'secret_key_{_parsed_version(__version__)}'.encode(),
     )
     return kdf_key.derive(pin_code.encode())
 
@@ -54,7 +61,10 @@ def encrypt(data: str, key: bytes) -> str:
 
 def decrypt(data: str, key: bytes) -> Optional[str]:
     """Decrypt data with AES-GCM."""
-    plain = jwe.decrypt_compact(data, key).plaintext
+    try:
+        plain = jwe.decrypt_compact(data, key).plaintext
+    except ValueError:
+        plain = None
     if plain is None:
         return None
     return plain.decode()

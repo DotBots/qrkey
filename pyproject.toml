@@ -40,6 +40,7 @@ dependencies = [
     "joserfc        == 0.9.0",
     "pydantic-settings == 2.1.0",
     "segno          == 1.6.0",
+    "semver         == 3.0.2",
     "structlog      == 24.1.0",
     "uvicorn        == 0.25.0",
     "websockets     == 12.0",
@@ -61,7 +62,7 @@ dependencies = [
   "pytest-cov",
 ]
 [tool.hatch.envs.default.scripts]
-test = "pytest -vv -s --color=yes --doctest-modules --cov=qrkey --cov-report=term --cov-report=term-missing --cov-report=xml {args:qrkey}"
+test = "pytest {args:qrkey}"
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.11", "3.12"]
@@ -79,6 +80,15 @@ profile = "black"
 
 [tool.mypy]
 disable_error_code = "attr-defined"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = """
+-vv -s
+--color=yes
+--doctest-modules
+--cov=qrkey --cov-report=term --cov-report=term-missing --cov-report=xml
+"""
 
 [tool.ruff]
 select = ["E", "F"]
