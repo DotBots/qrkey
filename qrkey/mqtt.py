@@ -36,7 +36,7 @@ from qrkey.models import (
 from qrkey.settings import qrkey_settings
 
 
-class QrKeyController:
+class QrkeyController:
     def __init__(
         self,
         request_callback: Callable,
@@ -103,7 +103,9 @@ class QrKeyController:
             logger.warning(f'Invalid payload received: {exc.errors()}')
             return
         if payload.timestamp < time.time() - 1 or payload.timestamp > time.time() + 1:
-            logger.warning(f'Invalid payload timestamp {payload.timestamp}, {time.time()}')
+            logger.warning(
+                f'Invalid payload timestamp {payload.timestamp}, {time.time()}'
+            )
             return
         payload = payload.payload
         if sub_topic == '/request':
