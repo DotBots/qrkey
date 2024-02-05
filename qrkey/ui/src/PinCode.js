@@ -87,7 +87,7 @@ export const PinCode = () => {
       }
       {pinCode &&
       <p>
-        Pin Code: <Animate on={pinCode} transition="FadeIn">{pinCode}</Animate>&nbsp;<button className="Button" type="button" onClick={onClipboardClick}><i className={`bi ${pinCodeCopied ? "bi-clipboard-check": "bi-clipboard"}`}></i></button>
+        Pin Code: <Animate on={pinCode} transition="FadeIn">{pinCode}</Animate>&nbsp;<button className="Button" type="button" role="button" onClick={onClipboardClick}><i className={`bi ${pinCodeCopied ? "bi-clipboard-check": "bi-clipboard"}`}></i></button>
       </p>
       }
     </div>

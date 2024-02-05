@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WS from 'jest-websocket-mock';
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { PinCode } from './PinCode';
 
 const TestPinCode = 12345678;
@@ -16,12 +16,23 @@ const handlers = [
   }),
 ];
 
+const writeText = jest.fn()
+
+Object.assign(navigator, {
+  clipboard: {
+    writeText,
+  },
+});
+
 const server = setupServer(...handlers);
 
 const wsServer = new WS("ws://localhost:8080/ws");
 const waitForElementOptions = {timeout: 2000};
 
-beforeAll(() => { server.listen(); });
+beforeAll(() => {
+  server.listen();
+  navigator.clipboard.writeText.mockResolvedValue(undefined);
+});
 afterEach(() => { server.resetHandlers(); });
 afterAll(() => { server.close(); });
 
@@ -50,8 +61,15 @@ test('Renders Pin Code', async () => {
   wsServer.send(JSON.stringify({cmd: 2})); // cmd != 255 should be ignored
   screen.getByText(`${TestPinCode}`);
 
-  wsServer.send(JSON.stringify({cmd: 255, pin_code: 87654321}));
+  wsServer.send(JSON.stringify({cmd: 255, pin_code: "87654321"}));
   await screen.findByText("87654321", {waitForElementOptions: waitForElementOptions});
   wsServer.close();
   expect(logSpy).toHaveBeenCalledWith('websocket closed');
+
+  // Checking QrCode is also here
+  const button = screen.queryByRole("button")
+  fireEvent.click(button);
+  await waitFor(() => {
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("87654321");
+  });
 });
