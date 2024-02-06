@@ -19,10 +19,9 @@ def build_ui(root):
     """Builds the ReactJS UI."""
     ui_dir = os.path.join(root, 'qrkey', 'ui')
     os.makedirs(os.path.join(ui_dir, 'build'), exist_ok=True)
-    if sys.platform != 'win32':
-        print('Building React frontend application...')
-        subprocess.run(shlex.split(NPM_INSTALL_CMD), cwd=ui_dir, check=True)
-        subprocess.run(shlex.split(NPM_BUILD_CMD), cwd=ui_dir, check=True)
+    print('Building React frontend application...')
+    subprocess.run(shlex.split(NPM_INSTALL_CMD), cwd=ui_dir, check=True)
+    subprocess.run(shlex.split(NPM_BUILD_CMD), cwd=ui_dir, check=True)
 
 
 class CustomBuildHook(BuildHookInterface):
