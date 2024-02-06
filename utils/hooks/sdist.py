@@ -28,6 +28,9 @@ def build_ui(root):
 class CustomBuildHook(BuildHookInterface):
     """Custom build hook that will build the React web frontend."""
 
-    def initialize(self, _, __):
+    def initialize(self, _, build_data):
         """Will be called before creating the source archive."""
         build_ui(self.root)
+        build_data['artifacts'] = [
+            os.path.join('qrkey', 'ui', 'build'),
+        ]
