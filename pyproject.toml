@@ -7,6 +7,9 @@ include = [
     "qrkey/ui/*",
     "*.py"
 ]
+exclude = [
+    "qrkey/ui/node_modules",
+]
 
 [tool.hatch.build.targets.sdist.hooks.custom]
 path = "utils/hooks/sdist.py"
