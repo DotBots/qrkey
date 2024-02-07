@@ -195,7 +195,7 @@ jobs:
     - name: Install hatch
       run: python -m pip install --upgrade keyring hatch
     - name: Publish package to PyPI
-      run: hatch publish -u ${{ secrets.PYPI_USER }} -a ${{ secrets.PYPI_TOKEN }} dist/wheels-* dist/*.tar.gz
+      run: hatch publish dist/wheels-* dist/*.tar.gz
     # - name: Release
     #   uses: ncipollo/release-action@v1
     #   with:
