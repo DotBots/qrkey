@@ -15,7 +15,6 @@ class CustomWheelHook(BuildHookInterface):
     def initialize(self, _, build_data):
         """Will be called before creating the source archive."""
 
-        build_data['infer_tag'] = True
         build_data['artifacts'] = [
             os.path.join('qrkey', 'ui', 'build'),
         ]
