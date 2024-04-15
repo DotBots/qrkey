@@ -12,7 +12,7 @@ export const useMqttBroker = ({ start, brokerUrl, brokerOptions, setMessage, sec
 
   const mqttPublish = async (topic, message) => {
     if (client && connected) {
-      log.debug(`Publishing to"${topic}: ${message}`);
+      log.debug(`Publishing to "${topic}": ${message}`);
       let encrypted = await encrypt(message, secretKey);
       await client.publishAsync(topic, encrypted);
     }
