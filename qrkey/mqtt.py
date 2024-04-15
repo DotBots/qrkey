@@ -179,7 +179,6 @@ class QrkeyController:
                 self.logger.info(f'Unsubscribe from {subscription.topic}')
                 self.client.unsubscribe(subscription.topic)
         self.old_mqtt_aes_key = None
-        self.old_mqtt_topic = None
 
     async def _ws_send_safe(self, websocket: WebSocket, msg: str):
         """Safely send a message to a websocket client."""
