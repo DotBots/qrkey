@@ -76,6 +76,10 @@ jobs:
       working-directory: ./js
     - run: npm run build
       working-directory: ./js
+    - run: npm adduser
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      working-directory: ./js
     - name: Upload js library
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
