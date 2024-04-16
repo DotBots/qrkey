@@ -88,6 +88,7 @@ jobs:
         github.event_name == 'push' &&
         startsWith(github.event.ref, 'refs/tags')
       run: npm publish
+      working-directory: ./js
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
