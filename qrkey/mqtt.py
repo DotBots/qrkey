@@ -266,6 +266,8 @@ class QrkeyController:
         self.message_callback_map.update({topic: callback})
 
     def publish(self, topic: str, message: Any):
+        if self.client.is_connected is False:
+            return
         payload = PayloadModel(timestamp=time.time(), payload=message)
         self.client.publish(
             f'{self.base_topic}{topic}',
