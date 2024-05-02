@@ -4,6 +4,10 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qrkey.svg)](https://pypi.org/project/qrkey)
 [![NPM - Version](https://img.shields.io/npm/v/qrkey.svg)](https://npmjs.org/package/qrkey)
 
+<p align="center">
+  <img src="qrkey.png" width="328"/>
+</p>
+
 ## Summary
 
 Qrkey is a library implementing a protocol designed to facilitate the
