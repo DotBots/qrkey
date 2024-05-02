@@ -102,7 +102,7 @@ class QrkeyController:
         except ValidationError as exc:
             logger.warning(f'Invalid payload received: {exc.errors()}')
             return
-        if payload.timestamp < time.time() - 1 or payload.timestamp > time.time() + 1:
+        if payload.timestamp < time.time() - qrkey_settings.timestamp_tolerance or payload.timestamp > time.time() + qrkey_settings.timestamp_tolerance:
             logger.warning(
                 f'Invalid payload timestamp {payload.timestamp}, {time.time()}'
             )

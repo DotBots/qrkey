@@ -46,11 +46,11 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
     try {
       parsed = JSON.parse(message.payload);
     } catch (error) {
-      log.warning(`${error.name}: ${error.message}`);
+      log.warn(`${error.name}: ${error.message}`);
       return;
     }
-    if ((parsed.timestamp < (Date.now() / 1000) - 1) || (parsed.timestamp > (Date.now() / 1000) + 1)) {
-      log.warning(`Message timestamp out of range: ${parsed.timestamp}`);
+    if ((parsed.timestamp < (Date.now() / 1000) - 2) || (parsed.timestamp > (Date.now() / 1000) + 2)) {
+      log.warn(`Message timestamp out of range: ${parsed.timestamp}`);
       return;
     }
     if (message.topic === `${rootTopic}/${secretTopic}/notify` && parsed.cmd === NotificationType.PinCodeUpdate) {
