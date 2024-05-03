@@ -12,7 +12,7 @@ const NotificationType = {
 
 export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPassword, rootTopic, setQrKeyMessage, searchParams, setSearchParams }) => {
   const [initializing, setInitializing] = useState(true);
-  const [initialized, setInitialized] = useState(false);
+  const [ready, setReady] = useState(false);
   const [previousPin, setPreviousPin] = useState(null);
   const [pin, setPin] = useState(null);
   const [mqttSubscribed, setMqttSubscribed] = useState(false);
@@ -128,9 +128,7 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
     if (!pin) {
       log.debug("Loading from local storage");
       const localPin = loadLocalPin();
-      if (localPin) {
-        setPin(localPin);
-      }
+      setPin(localPin);
     }
 
     setInitializing(false);
@@ -178,10 +176,8 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
   );
 
   useEffect(() => {
-    if (!initialized && mqttSubscribed) {
-      setInitialized(true);
-    }
-  }, [initialized, setInitialized, mqttSubscribed]
+    setReady(!initializing);
+  }, [setReady, initializing]
   );
 
   useEffect(() => {
@@ -205,5 +201,5 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
   }, [message, setMessage, handleMessage, mqttSubscribed]
   );
 
-  return [clientId, pin, setPin, publish, publishCommand, sendRequest];
+  return [ready, clientId, pin, setPin, publish, publishCommand, sendRequest];
 };
