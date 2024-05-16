@@ -49,7 +49,7 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
       log.warn(`${error.name}: ${error.message}`);
       return;
     }
-    if ((parsed.timestamp < (Date.now() / 1000) - 2) || (parsed.timestamp > (Date.now() / 1000) + 2)) {
+    if ((parsed.timestamp < (Date.now() / 1000) - 5) || (parsed.timestamp > (Date.now() / 1000) + 5)) {
       log.warn(`Message timestamp out of range: ${parsed.timestamp}`);
       return;
     }

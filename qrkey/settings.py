@@ -33,7 +33,7 @@ class QrkeySettings(BaseSettings):
     pin_code_refresh_interval: int = Field(default=15 * 60)  # in seconds
     pin_code_revoke_delay: int = Field(default=2 * 60)  # in seconds
 
-    timestamp_tolerance: int = Field(default=2)  # [-2:2] range in seconds
+    timestamp_tolerance: int = Field(default=5)  # [-5:5] range in seconds
 
 
 qrkey_settings = QrkeySettings()
