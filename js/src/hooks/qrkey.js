@@ -61,7 +61,7 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
       setQrKeyMessage(qrkeyMessage);
     }
     setMessage(null);
-  }, [message, setMessage, saveLocalPin, setPin, secretTopic]
+  }, [message, setMessage, setQrKeyMessage, saveLocalPin, setPin, secretTopic]
   );
 
   const publish = useCallback(async (subTopic, payload) => {
@@ -156,10 +156,10 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
       }
     }
   }, [
-    pin, connected, mqttSubscribed, previousPin,
-    disableSubscriptions, previousSecretTopic,
-    setupSubscriptions, secretTopic, setPreviousPin,
-    request, publishRequest, setRequest
+    pin, previousPin, setPreviousPin,
+    connected, mqttSubscribed,
+    disableSubscriptions, setupSubscriptions,
+    secretTopic, previousSecretTopic,
   ]);
 
   useEffect(() => {
@@ -187,9 +187,8 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
     }
 
     publishRequest();
-  }, [
-    connected, request, publishRequest, setRequest
-  ]);
+  }, [connected, request, publishRequest]
+  );
 
   useEffect(() => {
     // Process incoming messages if any
@@ -198,7 +197,7 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
     }
 
     handleMessage(message.topic, message.payload);
-  }, [message, setMessage, handleMessage, mqttSubscribed]
+  }, [message, handleMessage]
   );
 
   return [ready, clientId, pin, setPin, publish, publishCommand, sendRequest];
