@@ -39,14 +39,14 @@ classifiers = [
 dependencies = [
     "cryptography   == 43.0.1",
     "fastapi        == 0.115.0",
-    "fastapi-mqtt   == 2.1.0",
+    "fastapi-mqtt   == 2.2.0",
     "httpx          == 0.27.2",
     "joserfc        == 1.0.0",
     "pydantic-settings == 2.1.0",
     "segno          == 1.6.0",
     "semver         == 3.0.2",
     "structlog      == 24.4.0",
-    "uvicorn        == 0.31.0",
+    "uvicorn        == 0.32.0",
     "websockets     == 13.1",
 ]
 
