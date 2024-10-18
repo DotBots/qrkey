@@ -10,7 +10,7 @@ const NotificationType = {
   PinCodeUpdate: 255,
 };
 
-export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPassword, mqttUseSSL, mqttVersion, rootTopic, setQrKeyMessage, searchParams, setSearchParams }) => {
+export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPassword, mqttPath, mqttUseSSL, mqttVersion, rootTopic, setQrKeyMessage, searchParams, setSearchParams }) => {
   const [initializing, setInitializing] = useState(true);
   const [ready, setReady] = useState(false);
   const [previousPin, setPreviousPin] = useState(null);
@@ -26,7 +26,7 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
 
   const [client, connected, mqttPublish, mqttSubscribe, mqttUnsubscribe] = useMqttBroker({
     start: pin !== null,
-    brokerUrl: `ws${mqttUseSSL ? "s": ""}://${brokerHost}:${brokerPort}`,
+    brokerUrl: `ws${mqttUseSSL ? "s": ""}://${brokerHost}:${brokerPort}/${mqttPath}`,
     brokerOptions: {
       keepalive: 60,
       clean: true,

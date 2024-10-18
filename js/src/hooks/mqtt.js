@@ -64,7 +64,7 @@ export const useMqttBroker = ({ start, brokerUrl, brokerOptions, setMessage, sec
   useEffect(() => {
     if (start && !client) {
       log.info(`Connecting to mqtt`);
-      const mqttClient = mqtt.connect(`${brokerUrl}/mqtt`, brokerOptions);
+      const mqttClient = mqtt.connect(`${brokerUrl}`, brokerOptions);
       setClient(mqttClient);
       setupMqttClient(mqttClient);
     }
