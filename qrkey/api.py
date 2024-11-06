@@ -57,11 +57,21 @@ async def pin_code():
     tags=['mqtt'],
 )
 async def pin_code_qr_code():
-    """Returns the QR code."""
+    """Returns the MQTT data encoded in a QR code."""
     buff = io.BytesIO()
-    qrcode = segno.make_qr(
-        f'{qrkey_settings.frontend_base_url}?pin={api.controller.pin_code!s}'
+    url = (
+        f'{qrkey_settings.frontend_base_url}?'
+        f'pin={api.controller.pin_code!s}&'
+        f'mqtt_host={qrkey_settings.mqtt_host!s}&'
+        f'mqtt_port={qrkey_settings.mqtt_ws_port!s}&'
+        f'mqtt_version={qrkey_settings.mqtt_version!s}&'
+        f'mqtt_use_ssl={qrkey_settings.mqtt_use_ssl!s}'
     )
+    if qrkey_settings.mqtt_username is not None:
+        url += f'&mqtt_username={qrkey_settings.mqtt_username!s}'
+    if qrkey_settings.mqtt_password is not None:
+        url += f'&mqtt_password={qrkey_settings.mqtt_password!s}'
+    qrcode = segno.make_qr(url)
     qrcode.save(buff, kind='svg', scale=10, light=None)
     headers = {'Cache-Control': 'no-cache'}
     return Response(

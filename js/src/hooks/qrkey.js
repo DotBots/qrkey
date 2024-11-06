@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"; 
 import { useMqttBroker } from "./mqtt";
 import { deriveKey, deriveTopic } from "../utils/crypto";
-import { loadLocalPin, saveLocalPin } from "../utils/storage";
+import { loadLocalMqttData, saveLocalMqttData } from "../utils/storage";
 
 import logger from '../utils/logger';
 const log = logger.child({module: 'qrkey'});
@@ -10,15 +10,23 @@ const NotificationType = {
   PinCodeUpdate: 255,
 };
 
-export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPassword, mqttPath, mqttUseSSL, mqttVersion, rootTopic, setQrKeyMessage, searchParams, setSearchParams }) => {
+export const useQrKey = ({ rootTopic, setQrKeyMessage, searchParams, setSearchParams }) => {
   const [initializing, setInitializing] = useState(true);
   const [ready, setReady] = useState(false);
   const [previousPin, setPreviousPin] = useState(null);
-  const [pin, setPin] = useState(null);
+  const [mqttData, setMqttData] = useState(null);
   const [mqttSubscribed, setMqttSubscribed] = useState(false);
   const [request, setRequest] = useState(null);
   const [message, setMessage] = useState(null);
   const [clientId, setClientId] = useState(null);
+
+  const pin = mqttData ? mqttData.pin : null;
+  const use_ssl = mqttData ? mqttData.mqtt_use_ssl : false;
+  const mqtt_host = mqttData ? mqttData.mqtt_host : null;
+  const mqtt_port = mqttData ? mqttData.mqtt_port : null;
+  const mqtt_version = mqttData ? mqttData.mqtt_version : null;
+  const mqtt_username = mqttData ? mqttData.mqtt_username : null;
+  const mqtt_password = mqttData ? mqttData.mqtt_password : null;
 
   const secretKey = deriveKey(pin);
   const secretTopic = deriveTopic(pin);
@@ -26,15 +34,15 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
 
   const [client, connected, mqttPublish, mqttSubscribe, mqttUnsubscribe] = useMqttBroker({
     start: pin !== null,
-    brokerUrl: `ws${mqttUseSSL ? "s": ""}://${brokerHost}:${brokerPort}/${mqttPath}`,
+    brokerUrl: `ws${use_ssl ? "s": ""}://${mqtt_host}:${mqtt_port}/mqtt`,
     brokerOptions: {
       keepalive: 60,
       clean: true,
       reconnectPeriod: 1000,
       connectTimeout: 10 * 1000,
-      protocolVersion: mqttVersion,
-      username: brokerUsername,
-      password: brokerPassword,
+      protocolVersion: mqtt_version,
+      username: mqtt_username,
+      password: mqtt_password,
     },
     setMessage: setMessage,
     secretKey: secretKey,
@@ -54,14 +62,16 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
       return;
     }
     if (message.topic === `${rootTopic}/${secretTopic}/notify` && parsed.cmd === NotificationType.PinCodeUpdate) {
-      saveLocalPin(parsed.pin_code);
-      setPin(parsed.pin_code);
+      const mqttDataTmp = { ...mqttData };
+      mqttDataTmp.pin = parsed.pin_code;
+      saveLocalMqttData(mqttDataTmp);
+      setMqttData(mqttDataTmp);
     } else {
       let qrkeyMessage = {topic: message.topic.replace(`${rootTopic}/${secretTopic}`, ""), payload: parsed.payload};
       setQrKeyMessage(qrkeyMessage);
     }
     setMessage(null);
-  }, [message, setMessage, setQrKeyMessage, saveLocalPin, setPin, secretTopic]
+  }, [message, setMessage, setQrKeyMessage, saveLocalMqttData, setMqttData, secretTopic]
   );
 
   const publish = useCallback(async (subTopic, payload) => {
@@ -112,51 +122,69 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
   );
 
   useEffect(() => {
-    if (pin) {
+    if (mqttData) {
       return;
     }
 
-    if (!pin && searchParams && searchParams.has('pin')) {
-      const queryPin = searchParams.get('pin');
-      log.debug(`Pin ${queryPin} provided in query string`);
-      saveLocalPin(queryPin);
+    if (!mqttData &&
+      searchParams &&
+      searchParams.has('pin') &&
+      searchParams.has('mqtt_host') && searchParams.has('mqtt_port') &&
+      searchParams.has('mqtt_version') && searchParams.has('mqtt_use_ssl')
+    ) {
+      console.log("Loading from query string");
+      const queryMqttData = {
+        pin: searchParams.get('pin'),
+        mqtt_host: searchParams.get('mqtt_host'),
+        mqtt_port: searchParams.get('mqtt_port'),
+        mqtt_version: searchParams.get('mqtt_version'),
+        mqtt_use_ssl: searchParams.get('mqtt_use_ssl') === "True",
+      };
+      log.debug(`Pin ${queryMqttData.pin} provided in query string`);
+      saveLocalMqttData(queryMqttData);
       searchParams.delete('pin');
+      searchParams.delete('mqtt_host');
+      searchParams.delete('mqtt_port');
+      searchParams.delete('mqtt_version');
+      searchParams.delete('mqtt_use_ssl');
+      searchParams.delete('mqtt_username');
+      searchParams.delete('mqtt_password');
       setSearchParams(searchParams);
       return;
     }
 
-    if (!pin) {
+    if (!mqttData) {
       log.debug("Loading from local storage");
-      const localPin = loadLocalPin();
-      setPin(localPin);
+      const localMqttData = loadLocalMqttData();
+      setMqttData(localMqttData);
     }
 
     setInitializing(false);
 
-  }, [pin, setPin, searchParams, setSearchParams, setInitializing]
+  }, [mqttData, setMqttData, searchParams, setSearchParams, setInitializing]
   );
 
   useEffect(() => {
-    if (!pin) {
+    if (!mqttData) {
       return;
     }
 
-    if (previousPin !== pin) {
-        saveLocalPin(pin);
+    if (previousPin !== mqttData.pin) {
+        saveLocalMqttData(mqttData);
     }
 
     if (connected) {
-      if (mqttSubscribed && previousPin !== pin) {
+      if (mqttSubscribed && previousPin !== mqttData.pin) {
         disableSubscriptions(previousSecretTopic);
       }
 
       if (!mqttSubscribed) {
         setupSubscriptions(secretTopic);
-        setPreviousPin(pin);
+        setPreviousPin(mqttData.pin);
       }
     }
   }, [
-    pin, previousPin, setPreviousPin,
+    mqttData, previousPin, setPreviousPin,
     connected, mqttSubscribed,
     disableSubscriptions, setupSubscriptions,
     secretTopic, previousSecretTopic,
@@ -200,5 +228,5 @@ export const useQrKey = ({ brokerHost, brokerPort, brokerUsername, brokerPasswor
   }, [message, handleMessage]
   );
 
-  return [ready, clientId, pin, setPin, publish, publishCommand, sendRequest];
+  return [ready, clientId, mqttData, setMqttData, publish, publishCommand, sendRequest];
 };
