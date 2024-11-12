@@ -10,7 +10,7 @@ import pytest  # type: ignore
 import segno
 
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from qrkey.api import api
 from qrkey.models import (
@@ -19,7 +19,7 @@ from qrkey.models import (
 from qrkey.settings import qrkey_settings
 
 
-client = AsyncClient(app=api, base_url='http://testserver')
+client = AsyncClient(transport=ASGITransport(app=api), base_url='http://testserver')
 
 TEST_PIN_CODE = '123456789123'
 
