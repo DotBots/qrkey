@@ -2,7 +2,7 @@ import logger from './logger';
 const log = logger.child({module: 'storage'});
 
 export const loadLocalMqttData = () => {
-  const pin = parseInt(localStorage.getItem("pin"));
+  const pin = localStorage.getItem("pin");
   const mqtt_host = localStorage.getItem("mqtt_host");
   const mqtt_port = parseInt(localStorage.getItem("mqtt_port"));
   const mqtt_version = parseInt(localStorage.getItem("mqtt_version"));
