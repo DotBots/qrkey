@@ -10,7 +10,7 @@ import pytest  # type: ignore
 import segno
 
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from qrkey.api import api
 from qrkey.models import (
@@ -19,7 +19,7 @@ from qrkey.models import (
 from qrkey.settings import qrkey_settings
 
 
-client = AsyncClient(app=api, base_url='http://testserver')
+client = AsyncClient(transport=ASGITransport(app=api), base_url='http://testserver')
 
 TEST_PIN_CODE = '123456789123'
 
@@ -45,9 +45,76 @@ async def test_get_pin_code():
 
 
 @pytest.mark.asyncio
-async def test_get_qr_code():
+@pytest.mark.parametrize(
+    'version,use_ssl,username,password,url',
+    [
+        pytest.param(
+            qrkey_settings.mqtt_version,
+            qrkey_settings.mqtt_use_ssl,
+            qrkey_settings.mqtt_username,
+            qrkey_settings.mqtt_password,
+            (
+                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'&mqtt_host={qrkey_settings.mqtt_host}'
+                f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
+                f'&mqtt_version={qrkey_settings.mqtt_version}'
+                f'&mqtt_use_ssl={qrkey_settings.mqtt_use_ssl}'
+            ),
+            id='Default',
+        ),
+        pytest.param(
+            qrkey_settings.mqtt_version,
+            qrkey_settings.mqtt_use_ssl,
+            'test_user',
+            'test_password',
+            (
+                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'&mqtt_host={qrkey_settings.mqtt_host}'
+                f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
+                f'&mqtt_version={qrkey_settings.mqtt_version}'
+                f'&mqtt_use_ssl={qrkey_settings.mqtt_use_ssl}'
+                '&mqtt_username=test_user'
+                '&mqtt_password=test_password'
+            ),
+            id='UsernameSet',
+        ),
+        pytest.param(
+            4,
+            qrkey_settings.mqtt_use_ssl,
+            None,
+            None,
+            (
+                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'&mqtt_host={qrkey_settings.mqtt_host}'
+                f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
+                '&mqtt_version=4'
+                f'&mqtt_use_ssl={qrkey_settings.mqtt_use_ssl}'
+            ),
+            id='VersionSet',
+        ),
+        pytest.param(
+            qrkey_settings.mqtt_version,
+            True,
+            None,
+            None,
+            (
+                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'&mqtt_host={qrkey_settings.mqtt_host}'
+                f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
+                f'&mqtt_version={qrkey_settings.mqtt_version}'
+                '&mqtt_use_ssl=True'
+            ),
+            id='SSLSet',
+        ),
+    ],
+)
+async def test_get_qr_code(version, use_ssl, username, password, url):
     buff = io.BytesIO()
-    qrcode = segno.make_qr(f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}')
+    qrkey_settings.mqtt_version = version
+    qrkey_settings.mqtt_use_ssl = use_ssl
+    qrkey_settings.mqtt_username = username
+    qrkey_settings.mqtt_password = password
+    qrcode = segno.make_qr(url)
     qrcode.save(buff, kind='svg', scale=10, light=None)
     response = await client.get('/pin_code/qr_code')
     assert response.status_code == 200

@@ -20,6 +20,7 @@ class QrkeySettings(BaseSettings):
 
     mqtt_host: str = Field(default='localhost')
     mqtt_port: int = Field(default=1883)
+    mqtt_ws_port: int = Field(default=1884)
     mqtt_use_ssl: bool = Field(default=False)
     mqtt_username: Optional[str] = Field(default=None)
     mqtt_password: Optional[str] = Field(default=None)

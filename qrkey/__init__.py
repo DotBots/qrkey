@@ -4,3 +4,4 @@
 
 from qrkey.models import SubscriptionModel  # noqa: F401 (imported but unused)
 from qrkey.mqtt import QrkeyController  # noqa: F401 (imported but unused)
+from qrkey.settings import qrkey_settings  # noqa: F401 (imported but unused)
