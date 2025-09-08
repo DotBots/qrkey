@@ -19,7 +19,7 @@ class MqttPinCodeModel(BaseModel):
 class NotificationType(IntEnum):
     """Notification types for qrkey."""
 
-    PIN_CODE_UPDATE: int = 255
+    PIN_CODE_UPDATE = 255
 
 
 class NotificationModel(BaseModel):
