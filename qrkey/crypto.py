@@ -12,6 +12,7 @@ from typing import Optional
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from joserfc import jwe
+from joserfc.jwk import OctKey
 from semver import VersionInfo
 
 from qrkey.__about__ import __version__
@@ -54,13 +55,15 @@ def derive_aes_key(pin_code: str) -> bytes:
     return kdf_key.derive(pin_code.encode())
 
 
-def encrypt(data: str, key: bytes) -> str:
+def encrypt(data: str, key_bytes: bytes) -> str:
     """Encrypt data with AES-GCM."""
+    key = OctKey.import_key(key_bytes)
     return jwe.encrypt_compact(JOSE_PROTECTED, data, key)
 
 
-def decrypt(data: str, key: bytes) -> Optional[str]:
+def decrypt(data: str, key_bytes: bytes) -> Optional[str]:
     """Decrypt data with AES-GCM."""
+    key = OctKey.import_key(key_bytes)
     try:
         plain = jwe.decrypt_compact(data, key).plaintext
     except ValueError:
