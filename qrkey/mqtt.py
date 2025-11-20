@@ -222,7 +222,7 @@ class QrkeyController:
 
     async def api(self):
         """Starts the web server application."""
-        config = uvicorn.Config(api, host="0.0.0.0", port=8080, log_level='critical')
+        config = uvicorn.Config(api, host='0.0.0.0', port=8080, log_level='critical')
         server = uvicorn.Server(config)
 
         try:
