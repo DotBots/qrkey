@@ -23,11 +23,11 @@
   "homepage": "https://github.com/DotBots/qrkey/tree/main/js#readme",
   "dependencies": {
     "futoin-hkdf": "^1.5.3",
-    "jose": "^5.9.3",
-    "mqtt": "^5.10.1",
+    "jose": "^6.1.2",
+    "mqtt": "^5.14.1",
     "pino": "^9.4.0",
     "react": "^18.2.0",
-    "semver": "^7.6.3"
+    "semver": "^7.7.3"
   },
   "peerDependencies": {
     "react": "^18.2.0"
@@ -41,7 +41,7 @@
     "babel-loader": "^9.2.1",
     "flow-babel-webpack-plugin": "^1.1.1",
     "react": "file:../../PyDotBot/dotbot/frontend/node_modules/react",
-    "webpack": "^5.95.0",
+    "webpack": "^5.103.0",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
   },
