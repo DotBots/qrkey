@@ -57,7 +57,7 @@ test('Renders Pin Code', async () => {
   await screen.findByRole("QrCode", {waitForElementOptions: waitForElementOptions});
 
   // Testing websocket
-  expect(logSpy).toHaveBeenCalledWith('websocket opened');
+  expect(logSpy).toHaveBeenCalledWith('websocket opened at ws://localhost:8080/ws');
   wsServer.send(JSON.stringify({cmd: 2})); // cmd != 255 should be ignored
   screen.getByText(`${TestPinCode}`);
 

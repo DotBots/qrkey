@@ -58,7 +58,7 @@ export const PinCode = () => {
   );
 
   const onWsOpen = () => {
-    console.info(`WebSocket opened at ${websocketUrl}`);
+    console.log(`websocket opened at ${websocketUrl}`);
     fetchPinCode();
     fetchQrCode();
   };
