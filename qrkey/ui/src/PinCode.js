@@ -39,8 +39,6 @@ export const PinCode = () => {
     websocketUrl = `${window.location.origin.replace(/^https(.*)/, 'wss$1').replace(/^http(.*)/, 'ws$1')}/ws`;
   }
 
-  console.info(`Using WebSocket URL: ${websocketUrl}`);
-
   const fetchPinCode = useCallback(async () => {
     const data = await apiFetchPinCode().catch(error => console.log(error));
     if (data) {
@@ -60,7 +58,7 @@ export const PinCode = () => {
   );
 
   const onWsOpen = () => {
-    console.log('websocket opened');
+    console.info(`WebSocket opened at ${websocketUrl}`);
     fetchPinCode();
     fetchQrCode();
   };
