@@ -6,18 +6,21 @@ import useWebSocket from 'react-use-websocket';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './PinCode.css';
 
-const websocketUrl = `${process.env.REACT_APP_WS_URL}/ws`;
+let websocketUrl = "ws://localhost:8080/ws";
+
 const PinCodeUpdateValue = 255;
 
 const apiFetchPinCode = async () => {
+  console.info(`Fetching Pin Code from ${window.location.origin}/pin_code`);
   return await axios.get(
-    `${process.env.REACT_APP_BASE_URL}/pin_code`,
+    `${window.location.origin}/pin_code`,
   ).then(res => res.data);
 }
 
 const apiFetchQrCode = async () => {
+  console.info(`Fetching QR Code from ${window.location.origin}/pin_code/qr_code`);
   return await axios.get(
-    `${process.env.REACT_APP_BASE_URL}/pin_code/qr_code`,
+    `${window.location.origin}/pin_code/qr_code`,
   ).then(res => res.data);
 }
 
@@ -31,6 +34,12 @@ export const PinCode = () => {
   const [ pinCode, setPinCode ] = useState();
   const [ qrCode, setQrCode ] = useState();
   const [ pinCodeCopied, setPinCodeCopied ] = useState(false);
+
+  if (process.env.REACT_APP_WS_URL) {
+    websocketUrl = `${window.location.origin.replace(/^https(.*)/, 'wss$1').replace(/^http(.*)/, 'ws$1')}/ws`;
+  }
+
+  console.info(`Using WebSocket URL: ${websocketUrl}`);
 
   const fetchPinCode = useCallback(async () => {
     const data = await apiFetchPinCode().catch(error => console.log(error));
