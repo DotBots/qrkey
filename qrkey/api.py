@@ -61,6 +61,7 @@ async def pin_code_qr_code():
     buff = io.BytesIO()
     url = (
         f'{qrkey_settings.frontend_base_url}?'
+        'use_qrkey=true&'
         f'pin={api.controller.pin_code!s}&'
         f'mqtt_host={qrkey_settings.mqtt_host!s}&'
         f'mqtt_port={qrkey_settings.mqtt_ws_port!s}&'

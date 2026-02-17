@@ -54,7 +54,8 @@ async def test_get_pin_code():
             qrkey_settings.mqtt_username,
             qrkey_settings.mqtt_password,
             (
-                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'{qrkey_settings.frontend_base_url}?use_qrkey=true'
+                f'&pin={TEST_PIN_CODE}'
                 f'&mqtt_host={qrkey_settings.mqtt_host}'
                 f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
                 f'&mqtt_version={qrkey_settings.mqtt_version}'
@@ -68,7 +69,8 @@ async def test_get_pin_code():
             'test_user',
             'test_password',
             (
-                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'{qrkey_settings.frontend_base_url}?use_qrkey=true'
+                f'&pin={TEST_PIN_CODE}'
                 f'&mqtt_host={qrkey_settings.mqtt_host}'
                 f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
                 f'&mqtt_version={qrkey_settings.mqtt_version}'
@@ -84,7 +86,8 @@ async def test_get_pin_code():
             None,
             None,
             (
-                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'{qrkey_settings.frontend_base_url}?use_qrkey=true'
+                f'&pin={TEST_PIN_CODE}'
                 f'&mqtt_host={qrkey_settings.mqtt_host}'
                 f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
                 '&mqtt_version=4'
@@ -98,7 +101,8 @@ async def test_get_pin_code():
             None,
             None,
             (
-                f'{qrkey_settings.frontend_base_url}?pin={TEST_PIN_CODE}'
+                f'{qrkey_settings.frontend_base_url}?use_qrkey=true'
+                f'&pin={TEST_PIN_CODE}'
                 f'&mqtt_host={qrkey_settings.mqtt_host}'
                 f'&mqtt_port={qrkey_settings.mqtt_ws_port}'
                 f'&mqtt_version={qrkey_settings.mqtt_version}'
