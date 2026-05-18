@@ -95,6 +95,10 @@ async def websocket_endpoint(websocket: WebSocket):
             api.controller.websockets.remove(websocket)
 
 
-# Mount static files after all routes are defined
+# Mount static files after all routes are defined. Conditional so the
+# library stays importable on fresh clones / wheel installs that haven't
+# built the React UI under qrkey/ui/build/. Standalone deployers who
+# need /pin and skipped the build will see a 404 (covered in README).
 PIN_CODE_DIR = os.path.join(os.path.dirname(__file__), 'ui', 'build')
-api.mount('/pin', StaticFiles(directory=PIN_CODE_DIR, html=True), name='pin_code')
+if os.path.isdir(PIN_CODE_DIR):
+    api.mount('/pin', StaticFiles(directory=PIN_CODE_DIR, html=True), name='pin_code')

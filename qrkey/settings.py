@@ -14,7 +14,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class QrkeySettings(BaseSettings):
     """Mqtt broker connection settings."""
 
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+    # `extra='ignore'` so unrelated env vars in a sibling project's
+    # .env (e.g. a React frontend's VITE_*) do not raise
+    # extra_forbidden when QrkeySettings is constructed.
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        extra='ignore',
+    )
 
     frontend_base_url: str = Field(default='http://localhost:8080')
 

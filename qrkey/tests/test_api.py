@@ -4,6 +4,9 @@
 
 import asyncio
 import io
+import os
+import subprocess
+import sys
 from unittest.mock import MagicMock
 
 import pytest  # type: ignore
@@ -133,3 +136,41 @@ async def test_ws_client():
         websocket.close()
         await asyncio.sleep(0.1)
         assert len(api.controller.websockets) == 0
+
+
+def test_import_succeeds_without_ui_bundle(tmp_path):
+    # Regression check: `import qrkey.api` must succeed on a fresh clone
+    # that has not built the React UI bundle. Copies the qrkey package
+    # to a tempdir minus qrkey/ui/build/ and imports it in a subprocess
+    # so this test never affects the rest of the suite.
+    import shutil
+
+    src_pkg = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dest_pkg = tmp_path / 'qrkey'
+    shutil.copytree(src_pkg, dest_pkg)
+    shutil.rmtree(dest_pkg / 'ui' / 'build', ignore_errors=True)
+    assert not (dest_pkg / 'ui' / 'build').exists()
+
+    # The /pin path is used ONLY by the StaticFiles mount; route name
+    # 'pin_code' is shared with the @api.get('/pin_code') endpoint, so
+    # we discriminate by path here.
+    result = subprocess.run(
+        [
+            sys.executable,
+            '-c',
+            'import sys; sys.path.insert(0, %r); '
+            'import qrkey.api as m; '
+            'import os.path; '
+            "assert not os.path.isdir(m.PIN_CODE_DIR), 'UI dir should be absent'; "
+            "assert all(getattr(r, 'path', None) != '/pin' for r in m.api.routes), "
+            "'StaticFiles /pin mount should be skipped'; "
+            "print('ok')" % str(tmp_path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert result.returncode == 0, (
+        f'import failed:\nstdout={result.stdout}\nstderr={result.stderr}'
+    )
+    assert result.stdout.strip() == 'ok'
