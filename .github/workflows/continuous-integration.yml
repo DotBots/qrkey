@@ -175,6 +175,8 @@ jobs:
     name: publish release
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
@@ -188,4 +190,4 @@ jobs:
       with:
         generateReleaseNotes: true
         artifacts: "dist/*.tar.gz,dist/*.whl"
-        token: ${{ secrets.RELEASE_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
